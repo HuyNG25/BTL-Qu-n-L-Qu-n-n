@@ -23,5 +23,3 @@ Hệ thống quản lý quán ăn là một ứng dụng phần mềm hỗ trợ
   <img width="1902" height="931" alt="image" src="./Quanlysukien.png" />
   + Quản lý khách hàng
   <img width="1902" height="931" alt="image" src="./Quanlykhachhang.png" />
-  + Chức năng mở rộng
-  <img width="1902" height="931" alt="image" src="./Quanlychucnangmorong.png" />
