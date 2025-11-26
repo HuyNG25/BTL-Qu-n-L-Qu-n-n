@@ -1,0 +1,234 @@
+{
+  "users": {
+    "admin": {
+      "id": 1,
+      "name": "Admin Quản Lý",
+      "username": "admin",
+      "password": "123456",
+      "role": "Quản lý"
+    },
+    "nv001": {
+      "id": 2,
+      "name": "Trần Thu Ngân",
+      "username": "nv001",
+      "password": "123",
+      "role": "Thu ngân"
+    }
+  },
+  "dishes": {
+    "F001": {
+      "id": "F001",
+      "name": "Phở bò",
+      "category": "Đồ ăn",
+      "price": 50000,
+      "status": "Còn hàng"
+    },
+    "F002": {
+      "id": "F002",
+      "name": "Cà phê sữa",
+      "category": "Thức uống",
+      "price": 25000,
+      "status": "Còn hàng"
+    },
+    "F003": {
+      "id": "F003",
+      "name": "Combo gia đình",
+      "category": "Combo",
+      "price": 200000,
+      "status": "Còn hàng"
+    },
+    "F004": {
+      "id": "F004",
+      "name": "bia hơi",
+      "category": "Thức uống",
+      "price": 250000,
+      "status": "Còn hàng"
+    },
+    "F005": {
+      "id": "F005",
+      "name": "Gà ủ muối Thái Công",
+      "category": "Đồ ăn",
+      "price": 100000000,
+      "status": "Còn hàng"
+    }
+  },
+  "orders": {
+    "ORD001": {
+      "id": "ORD001",
+      "table": "Bàn 5",
+      "time": "2025-11-03T14:30:00",
+      "total": 450000,
+      "status": "Đã thanh toán",
+      "items": [
+        {
+          "name": "Phở bò",
+          "quantity": 2,
+          "price": 50000
+        },
+        {
+          "name": "Combo gia đình",
+          "quantity": 1,
+          "price": 200000
+        },
+        {
+          "name": "Cà phê sữa",
+          "quantity": 6,
+          "price": 25000
+        }
+      ]
+    },
+    "ORD002": {
+      "id": "ORD002",
+      "table": "Bàn 12",
+      "time": "2025-11-04T10:15:00",
+      "total": 320000,
+      "status": "Đã thanh toán",
+      "items": [
+        {
+          "name": "Cà phê sữa",
+          "quantity": 4,
+          "price": 25000
+        },
+        {
+          "name": "Phở bò",
+          "quantity": 2,
+          "price": 50000
+        }
+      ]
+    },
+    "ORD003": {
+      "id": "ORD003",
+      "table": "Bàn 1",
+      "time": "2025-11-04T04:10:37.296925",
+      "total": 250000,
+      "status": "Đã thanh toán",
+      "items": [
+        {
+          "name": "bia hơi",
+          "quantity": 1,
+          "price": 250000
+        }
+      ]
+    },
+    "ORD004": {
+      "id": "ORD004",
+      "table": "Bàn 2",
+      "time": "2025-11-04T04:10:48.057302",
+      "total": 25000,
+      "status": "Đã thanh toán",
+      "items": [
+        {
+          "name": "Cà phê sữa",
+          "quantity": 1,
+          "price": 25000
+        }
+      ]
+    },
+    "ORD005": {
+      "id": "ORD005",
+      "table": "Bàn 1",
+      "time": "2025-11-04T04:14:41.376557",
+      "total": 250000000,
+      "status": "Đang phục vụ",
+      "items": [
+        {
+          "name": "bia hơi",
+          "quantity": 1000,
+          "price": 250000
+        }
+      ]
+    },
+    "ORD006": {
+      "id": "ORD006",
+      "table": "Bàn 12",
+      "time": "2025-11-04T04:26:25.466329",
+      "total": 1000000000000000000000000,
+      "status": "Đã thanh toán",
+      "items": [
+        {
+          "name": "Gà ủ muối Thái Công",
+          "quantity": 10000000000000000,
+          "price": 100000000
+        }
+      ]
+    },
+    "ORD007": {
+      "id": "ORD007",
+      "table": "Bàn 2",
+      "time": "2025-11-04T04:29:57.206998",
+      "total": 50000,
+      "status": "Đã thanh toán",
+      "items": [
+        {
+          "name": "Phở bò",
+          "quantity": 1,
+          "price": 50000
+        }
+      ]
+    },
+    "ORD008": {
+      "id": "ORD008",
+      "table": "Bàn 12",
+      "time": "2025-11-04T04:30:08.113356",
+      "total": 200000,
+      "status": "Đã thanh toán",
+      "items": [
+        {
+          "name": "Combo gia đình",
+          "quantity": 1,
+          "price": 200000
+        }
+      ]
+    }
+  },
+  "tables": {
+    "T1": {
+      "id": "T1",
+      "name": "Bàn 1",
+      "status": "Đang dùng",
+      "orderId": "ORD005"
+    },
+    "T2": {
+      "id": "T2",
+      "name": "Bàn 2",
+      "status": "Trống",
+      "orderId": null
+    },
+    "T3": {
+      "id": "T3",
+      "name": "Bàn 3",
+      "status": "Trống",
+      "orderId": null
+    },
+    "T12": {
+      "id": "T12",
+      "name": "Bàn 12",
+      "status": "Trống",
+      "orderId": null
+    }
+  },
+  "events": {
+    "EV001": {
+      "id": "EV001",
+      "name": "Tiệc sinh nhật",
+      "time": "2025-11-10T19:00:00",
+      "guests": 15,
+      "status": "Đã đặt"
+    },
+    "EV002": {
+      "id": "EV002",
+      "name": "Họp mặt công ty",
+      "time": "2025-11-05T12:00:00",
+      "guests": 30,
+      "status": "Đã đặt"
+    }
+  },
+  "customers": {
+    "C001": {
+      "id": "C001",
+      "name": "Nguyễn Văn Khách",
+      "email": "customer@gmail.com",
+      "phone": "0909123456"
+    }
+  }
+}

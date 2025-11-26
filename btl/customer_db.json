@@ -1,0 +1,31 @@
+{
+  "customers": {
+    "customer@gmail.com": {
+      "id": "C001",
+      "name": "Nguyễn Văn Khách",
+      "email": "customer@gmail.com",
+      "phone": "0909123456",
+      "password": "123456"
+    }
+  },
+  "bookings": {
+    "B001": {
+      "id": "B001",
+      "customerId": "C001",
+      "date": "2025-11-10",
+      "time": "18:30",
+      "guests": 2,
+      "specialRequests": "Xin bàn gần cửa sổ",
+      "status": "Đã đặt"
+    },
+    "B002": {
+      "id": "B002",
+      "customerId": "C001",
+      "date": "2025-11-04",
+      "time": "00:00",
+      "guests": "20",
+      "specialRequests": "Tuyển tôi 20 cô em chân dài cho hòa gay",
+      "status": "Đã đặt"
+    }
+  }
+}

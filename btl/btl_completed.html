@@ -1,0 +1,3185 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ thống Quản lý Nhà hàng</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #e74c3c;
+            --secondary-color: #2c3e50;
+            --accent-color: #3498db;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background-color: var(--secondary-color);
+            color: white;
+            transition: all 0.3s;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+        
+        .sidebar-header {
+            padding: 20px;
+            background-color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .sidebar-header img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
+        
+        .sidebar-menu {
+            padding: 15px 0;
+        }
+        
+        .menu-item {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative; 
+        }
+        
+        .menu-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .menu-item.active {
+            background-color: var(--primary-color);
+        }
+
+        .menu-item .fa-chevron-down, .menu-item .fa-chevron-up {
+            margin-left: auto;
+            transition: transform 0.2s;
+        }
+        
+        .submenu {
+            display: none;
+            background-color: rgba(0, 0, 0, 0.2);
+            padding-left: 10px; 
+        }
+        
+        .submenu.active {
+            display: block;
+        }
+        
+        .submenu-item {
+            padding: 10px 20px 10px 50px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .submenu-item.active {
+             background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .submenu-item:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            transition: all 0.3s;
+        }
+        
+        .top-nav {
+            background-color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .toggle-sidebar {
+            font-size: 20px;
+            cursor: pointer;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--accent-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .content-area {
+            padding: 20px;
+        }
+        
+        .page-title {
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: var(--secondary-color);
+        }
+        
+        /* Cards */
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .card-header {
+            padding: 15px 20px;
+            background-color: var(--light-color);
+            border-bottom: 1px solid #eee;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .card-body {
+            padding: 20px;
+        }
+
+        .card-footer {
+            padding: 15px 20px;
+            background-color: var(--light-color);
+            border-top: 1px solid #eee;
+            text-align: right;
+        }
+        
+        /* Forms */
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .form-control:focus {
+            border-color: var(--accent-color);
+            outline: none;
+        }
+        
+        /* Buttons */
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #c0392b;
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #1a252f;
+        }
+        
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #27ae60;
+        }
+        
+        .btn-warning {
+            background-color: var(--warning-color);
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            background-color: #e67e22;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+        
+        /* Tables */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .table th, .table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .table th {
+            background-color: var(--light-color);
+            font-weight: 600;
+        }
+        
+        .table tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        .badge {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 12px;
+            display: inline-block;
+        }
+
+        .badge-success { background-color: var(--success-color); color: white; }
+        .badge-warning { background-color: var(--warning-color); color: white; }
+        .badge-danger { background-color: var(--danger-color); color: white; }
+        .badge-primary { background-color: var(--primary-color); color: white; }
+        .badge-secondary { background-color: var(--secondary-color); color: white; }
+        
+        /* Login Page */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        }
+        
+        .login-card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            width: 400px;
+            padding: 30px;
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .login-header h2 {
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+        }
+        
+        .login-header p {
+            color: #777;
+        }
+        
+        .login-footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #777;
+        }
+        
+        .login-footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        /* Tabs */
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+        }
+        
+        .tab.active {
+            border-bottom: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Dashboard Stats */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+        }
+        
+        .stat-info h3 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        
+        .stat-info p {
+            color: #777;
+        }
+        
+        /* Table Status */
+        .tables-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        
+        .table-item {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .table-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .table-item.occupied {
+            background-color: var(--danger-color);
+            color: white;
+        }
+        
+        .table-item.available {
+            background-color: var(--success-color);
+            color: white;
+        }
+        
+        .table-item.reserved {
+            background-color: var(--warning-color);
+            color: white;
+        }
+        
+        .table-number {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .table-status {
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #aaa;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 70px;
+            }
+            
+            .sidebar-header span, .menu-item span {
+                display: none;
+            }
+
+            .menu-item .fa-chevron-down, .menu-item .fa-chevron-up {
+                margin-left: 0; 
+            }
+            
+            .main-content {
+                margin-left: 70px;
+            }
+            
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar.collapsed {
+                width: 250px;
+            }
+
+            .main-content.expanded {
+                margin-left: 250px;
+            }
+        }
+
+        /* Khi sidebar thu gọn */
+        .sidebar.collapsed .sidebar-header span, 
+        .sidebar.collapsed .menu-item span,
+        .sidebar.collapsed .submenu {
+            display: none !important;
+        }
+
+        .sidebar.collapsed {
+            width: 70px;
+        }
+
+        .main-content.expanded {
+            margin-left: 70px;
+        }
+        
+        /* Hidden elements */
+        .hidden {
+            display: none;
+        }
+
+        /* Table Action Form */
+        #tableActionForm {
+            padding: 20px;
+        }
+
+    </style>
+</head>
+<body>
+    <div id="loginPage" class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <h2>Đăng nhập hệ thống (Nhân viên)</h2>
+                <p>Nhập thông tin tài khoản của bạn</p>
+            </div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label class="form-label">Tên đăng nhập</label>
+                    <input type="text" class="form-control" name="username" placeholder="Nhập tên đăng nhập" required value="admin">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Mật khẩu</label>
+                    <input type="password" class="form-control" name="password" placeholder="Nhập mật khẩu" required value="123456">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Đăng nhập</button>
+            </form>
+            <div class="login-footer">
+                <p>Chưa có tài khoản? <a href="#" id="showRegister">Đăng ký ngay</a></p>
+                <p><a href="#" id="showCustomerLoginFromStaff">Đăng nhập với tư cách Khách</a></p>
+            </div>
+        </div>
+    </div>
+
+    <div id="registerPage" class="login-container hidden">
+        <div class="login-card">
+            <div class="login-header">
+                <h2>Đăng ký tài khoản (Nhân viên)</h2>
+                <p>Tạo tài khoản mới cho nhân viên</p>
+            </div>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label class="form-label">Họ và tên</label>
+                    <input type="text" class="form-control" name="name" placeholder="Nhập họ và tên" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tên đăng nhập</label>
+                    <input type="text" class="form-control" name="username" placeholder="Nhập tên đăng nhập" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Mật khẩu</label>
+                    <input type="password" class="form-control" name="password" placeholder="Nhập mật khẩu" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Xác nhận mật khẩu</label>
+                    <input type="password" class="form-control" name="confirmPassword" placeholder="Nhập lại mật khẩu" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Vai trò</label>
+                    <select class="form-control" name="role" required>
+                        <option value="">Chọn vai trò</option>
+                        <option value="admin">Quản lý</option>
+                        <option value="cashier">Thu ngân</option>
+                        <option value="waiter">Phục vụ</option>
+                        <option value="chef">Đầu bếp</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Đăng ký</button>
+            </form>
+            <div class="login-footer">
+                <p>Đã có tài khoản? <a href="#" id="showLogin">Đăng nhập ngay</a></p>
+            </div>
+        </div>
+    </div>
+
+    <div id="app" class="container hidden">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <img src="https://via.placeholder.com/40" alt="Logo">
+                <span>Nhà hàng ABC</span>
+            </div>
+            <div class="sidebar-menu">
+                <div class="menu-item active" data-page="dashboard">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </div>
+                
+                <div class="menu-item" data-page="menuManagement">
+                    <i class="fas fa-utensils"></i>
+                    <span>Quản lý Món ăn</span>
+                </div>
+                
+                <div class="menu-item" data-page="orderManagement">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>Quản lý Đơn hàng</span>
+                </div>
+                
+                <div class="menu-item" data-page="tableManagement">
+                    <i class="fas fa-chair"></i>
+                    <span>Quản lý Bàn ăn</span>
+                </div>
+                
+                <div class="menu-item" data-page="paymentManagement">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <span>Quản lý Thanh toán</span>
+                </div>
+                
+                <div class="menu-item" data-page="staffManagement">
+                    <i class="fas fa-users"></i>
+                    <span>Quản lý Nhân viên</span>
+                </div>
+                
+                <div class="menu-item" data-page="eventManagement">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Quản lý Sự kiện</span>
+                </div>
+                
+                <div class="menu-item" data-toggle="submenu">
+                    <i class="fas fa-cogs"></i>
+                    <span>Quản lý Nhánh</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                
+                <div class="submenu">
+                    <div class="submenu-item" data-page="customerManagement">Quản lý Khách hàng</div>
+                    <div class="submenu-item" data-page="inventoryManagement">Quản lý Kho</div>
+                    <div class="submenu-item" data-page="promotionManagement">Khuyến mãi/Giảm giá</div>
+                    <div class="submenu-item" data-page="reportManagement">Báo cáo & Thống kê</div>
+                    <div class="submenu-item" data-page="branchManagement">Quản lý Nhánh</div>
+                    <div class="submenu-item" data-page="systemConfig">Cấu hình Hệ thống</div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="customerModal" class="modal hidden">
+            <div class="modal-content">
+                <span class="modal-close" id="closeCustomerModal">&times;</span>
+                <h2 id="customerModalTitle">Thêm Khách hàng</h2>
+                <form id="customerForm">
+                    <input type="hidden" id="customerId">
+                    <div class="form-group">
+                        <label class="form-label">Họ và tên</label>
+                        <input type="text" class="form-control" id="customerName" placeholder="Nhập họ và tên" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" id="customerEmail" placeholder="Nhập email">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Điện thoại</label>
+                        <input type="tel" class="form-control" id="customerPhone" placeholder="Nhập số điện thoại">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Ghi chú</label>
+                        <textarea class="form-control" id="customerNote" rows="2" placeholder="Ghi chú (tùy chọn)"></textarea>
+                    </div>
+                    <div style="text-align:right">
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Lưu</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Add Table Modal -->
+        <div id="addTableModal" class="modal hidden">
+            <div class="modal-content">
+                <span class="modal-close" id="closeAddTableModal">&times;</span>
+                <h2>Thêm Bàn mới</h2>
+                <form id="addTableForm">
+                    <div class="form-group">
+                        <label class="form-label">Tên Bàn</label>
+                        <input type="text" id="newTableName" class="form-control" placeholder="Ví dụ: Bàn 13" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Thêm Bàn</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Merge Tables Modal -->
+        <div id="mergeTablesModal" class="modal hidden">
+            <div class="modal-content">
+                <span class="modal-close" id="closeMergeTablesModal">&times;</span>
+                <h2>Gộp Bàn</h2>
+                <form id="mergeTablesForm">
+                    <div class="form-group">
+                        <label class="form-label">Chọn các bàn cần gộp (ít nhất 2)</label>
+                        <div id="mergeTablesList" style="max-height:200px; overflow:auto; border:1px solid #eee; padding:10px; border-radius:4px">
+                            <!-- populated dynamically -->
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Tên Bàn Gộp</label>
+                        <input type="text" id="mergedTableName" class="form-control" placeholder="Ví dụ: Bàn 1+2" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-compress-arrows-alt"></i> Gộp Bàn</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="top-nav">
+                <div class="toggle-sidebar">
+                    <i class="fas fa-bars"></i>
+                </div>
+                <div class="user-info">
+                    <div class="user-avatar">NV</div>
+                    <span>Nhân Viên</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+
+            <div class="content-area">
+                <div id="dashboard" class="page active">
+                    <h1 class="page-title">Dashboard</h1>
+                    
+                    <div class="stats-container">
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background-color: var(--primary-color);">
+                                <i class="fas fa-shopping-cart"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3 id="dash-orders">0</h3>
+                                <p>Đơn hàng hôm nay</p>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background-color: var(--success-color);">
+                                <i class="fas fa-money-bill-wave"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3 id="dash-revenue">0đ</h3>
+                                <p>Doanh thu hôm nay</p>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background-color: var(--accent-color);">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3 id="dash-tables">0/0</h3>
+                                <p>Bàn đang sử dụng</p>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background-color: var(--warning-color);">
+                                <i class="fas fa-utensils"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3 id="dash-stock">0</h3>
+                                <p>Món sắp hết</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <span>Đơn hàng gần đây</span>
+                            <button class="btn btn-primary btn-sm" onclick="navigateToPage('orderManagement')">Xem tất cả</button>
+                        </div>
+                        <div class="card-body">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Mã đơn</th>
+                                        <th>Bàn</th>
+                                        <th>Thời gian</th>
+                                        <th>Tổng tiền</th>
+                                        <th>Trạng thái</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recentOrdersTableBody">
+                                    <tr><td colspan="5">Đang tải...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="menuManagement" class="page hidden">
+                    <h1 class="page-title">Quản lý Món ăn & Menu</h1>
+                    
+                    <div class="tabs">
+                        <div class="tab active" data-tab="dishes">Món ăn</div>
+                        <div class="tab" data-tab="categories">Danh mục</div>
+                        <div class="tab" data-tab="menu">Menu</div>
+                    </div>
+                    
+                    <div class="tab-content active" id="dishes">
+                        <div class="card">
+                            <div class="card-header">
+                                <span>Danh sách món ăn</span>
+                                <button class="btn btn-primary" id="showAddDishModal"><i class="fas fa-plus"></i> Thêm món ăn</button>
+                            </div>
+                            <div class="card-body">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Tên món</th>
+                                            <th>Danh mục</th>
+                                            <th>Giá</th>
+                                            <th>Trạng thái</th>
+                                            <th>Thao tác</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="dishesTableBody">
+                                        </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-content" id="categories">
+                        <div class="card">
+                            <div class="card-header">
+                                <span>Danh sách Danh mục</span>
+                                <button class="btn btn-primary"><i class="fas fa-plus"></i> Thêm danh mục</button>
+                            </div>
+                            <div class="card-body">
+                                <p>Nội dung quản lý danh mục...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="menu">
+                        <div class="card">
+                            <div class="card-header">
+                                <span>Thiết lập Menu</span>
+                            </div>
+                            <div class="card-body">
+                                <p>Nội dung quản lý menu...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="dishModal" class="modal hidden">
+                    <div class="modal-content">
+                        <span class="modal-close" id="closeDishModal">&times;</span>
+                        <h2 id="dishModalTitle">Thêm Món ăn mới</h2>
+                        <form id="dishForm">
+                            <input type="hidden" id="dishId">
+                            <div class="form-group">
+                                <label class="form-label">Tên món</label>
+                                <input type="text" class="form-control" id="dishName" placeholder="Nhập tên món ăn" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Danh mục</label>
+                                <select class="form-control" id="dishCategory" required>
+                                    <option value="">Chọn danh mục</option>
+                                    <option value="Đồ ăn">Đồ ăn</option>
+                                    <option value="Thức uống">Thức uống</option>
+                                    <option value="Combo">Combo</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Giá (VND)</label>
+                                <input type="number" class="form-control" id="dishPrice" placeholder="Nhập giá" required min="0">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Trạng thái</label>
+                                <select class="form-control" id="dishStatus" required>
+                                    <option value="Còn hàng">Còn hàng</option>
+                                    <option value="Hết hàng">Hết hàng</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Lưu</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div id="orderManagement" class="page hidden">
+                    <h1 class="page-title">Quản lý Đơn hàng</h1>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <span>Danh sách đơn hàng</span>
+                            <button class="btn btn-primary" id="showCreateOrderModal"><i class="fas fa-plus"></i> Tạo đơn hàng mới</button>
+                        </div>
+                        <div class="card-body">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Mã đơn</th>
+                                        <th>Bàn</th>
+                                        <th>Thời gian</th>
+                                        <th>Tổng tiền</th>
+                                        <th>Trạng thái</th>
+                                        <th>Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ordersTableBody">
+                                    </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="createOrderModal" class="modal hidden">
+                    <div class="modal-content">
+                        <span class="modal-close" id="closeCreateOrderModal">&times;</span>
+                        <h2>Tạo Đơn hàng mới</h2>
+                        <form id="createOrderForm">
+                            <div class="form-group">
+                                <label class="form-label">Chọn Bàn</label>
+                                <select class="form-control" id="createOrderTable" required>
+                                    <option value="">-- Chọn bàn --</option>
+                                    </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Thêm Món ăn</label>
+                                <select class="form-control" id="createOrderDishes">
+                                    <option value="">-- Chọn món --</option>
+                                    </select>
+                            </div>
+                            <div id="selectedOrderItems">
+                                <p class="text-muted">Chưa có món nào được chọn.</p>
+                            </div>
+                            <div style="margin-top:12px; display:flex; gap:8px;">
+                                <button type="button" id="previewOrder" class="btn btn-secondary">Xem trước</button>
+                                <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Lưu Đơn hàng</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div id="orderDetailModal" class="modal hidden">
+                    <div class="modal-content">
+                        <span class="modal-close" id="closeOrderDetailModal">&times;</span>
+                        <h2>Chi tiết Đơn hàng: <span id="orderDetailId"></span></h2>
+                        <p><strong>Bàn:</strong> <span id="orderDetailTable"></span></p>
+                        <p><strong>Thời gian:</strong> <span id="orderDetailTime"></span></p>
+                        <p><strong>Trạng thái:</strong> <span id="orderDetailStatus"></span></p>
+                        <hr>
+                        <h4>Danh sách món</h4>
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Món</th>
+                                    <th>SL</th>
+                                    <th>Giá</th>
+                                    <th>Thành tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody id="orderDetailItems">
+                            </tbody>
+                        </table>
+                        <hr>
+                        <p><strong>Tổng cộng: <span id="orderDetailTotal"></span></strong></p>
+                        <div class="card-footer">
+                            <button class="btn btn-danger" onclick="closeModal('orderDetailModal')"><i class="fas fa-times-circle"></i> Đóng</button>
+                        </div>
+                    </div>
+                </div>
+
+                        <div id="orderPreviewModal" class="modal hidden">
+                            <div class="modal-content">
+                                <span class="modal-close" id="closeOrderPreviewModal">&times;</span>
+                                <h2>Xem trước đơn hàng</h2>
+                                <div id="orderPreviewContent">
+                                    <!-- preview content inserted here -->
+                                </div>
+                                <div style="margin-top:12px; text-align:right;">
+                                    <button class="btn btn-secondary" onclick="closeModal('orderPreviewModal')">Đóng</button>
+                                </div>
+                            </div>
+                        </div>
+
+                <div id="tableManagement" class="page hidden">
+                    <h1 class="page-title">Quản lý Bàn ăn</h1>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <span>Danh sách bàn ăn</span>
+                            <div class="btn-group">
+                                <button class="btn btn-primary" id="showAddTableModal"><i class="fas fa-plus"></i> Thêm bàn</button>
+                                <button class="btn btn-secondary" id="showMergeTablesModal"><i class="fas fa-layer-group"></i> Gộp bàn</button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="tables-grid" id="tablesGrid">
+                                </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tableActionModal" class="modal hidden">
+                    <div class="modal-content">
+                        <span class="modal-close" id="closeTableActionModal">&times;</span>
+                        <h2 id="tableActionTitle">Thao tác Bàn</h2>
+                        <div id="tableActionContent">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="paymentManagement" class="page hidden">
+                    <h1 class="page-title">Quản lý Thanh toán</h1>
+                    <div class="card">
+                        <div class="card-header">
+                            <span>Danh sách chờ Thanh toán</span>
+                            <button class="btn btn-success"><i class="fas fa-file-invoice-dollar"></i> Lập hóa đơn mới</button>
+                        </div>
+                        <div class="card-body">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Mã đơn</th>
+                                        <th>Bàn</th>
+                                        <th>Thời gian</th>
+                                        <th>Tổng tiền Tạm tính</th>
+                                        <th>Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="paymentTableBody">
+                                    </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="staffManagement" class="page hidden">
+                    <h1 class="page-title">Quản lý Nhân viên</h1>
+                    <div class="card">
+                        <div class="card-header">
+                            <span>Danh sách Nhân viên</span>
+                            <button class="btn btn-primary" id="showAddStaffModal"><i class="fas fa-user-plus"></i> Thêm Nhân viên</button>
+                        </div>
+                        <div class="card-body">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Họ và tên</th>
+                                        <th>Vai trò</th>
+                                        <th>Tên đăng nhập</th>
+                                        <th>Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="staffTableBody">
+                                    </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="staffModal" class="modal hidden">
+                    <div class="modal-content">
+                        <span class="modal-close" id="closeStaffModal">&times;</span>
+                        <h2 id="staffModalTitle">Thêm Nhân viên mới</h2>
+                        <form id="staffForm">
+                            <input type="hidden" id="staffId">
+                            <div class="form-group">
+                                <label class="form-label">Họ và tên</label>
+                                <input type="text" class="form-control" id="staffName" placeholder="Nhập họ và tên" required>
+                            </div>
+                             <div class="form-group">
+                                <label class="form-label">Tên đăng nhập</label>
+                                <input type="text" class="form-control" id="staffUsername" placeholder="Nhập tên đăng nhập" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Mật khẩu</label>
+                                <input type="password" class="form-control" id="staffPassword" placeholder="Nhập mật khẩu (để trống nếu không đổi)">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Vai trò</label>
+                                <select class="form-control" id="staffRole" required>
+                                    <option value="">Chọn vai trò</option>
+                                    <option value="Quản lý">Quản lý</option>
+                                    <option value="Thu ngân">Thu ngân</option>
+                                    <option value="Phục vụ">Phục vụ</option>
+                                    <option value="Đầu bếp">Đầu bếp</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Lưu</button>
+                        </form>
+                    </div>
+                </div>
+                
+                <div id="eventManagement" class="page hidden">
+                    <h1 class="page-title">Quản lý Sự kiện</h1>
+                    <div class="card">
+                        <div class="card-header">
+                            <span>Danh sách Sự kiện/Đặt bàn</span>
+                            <button class="btn btn-primary" id="showAddEventModal"><i class="fas fa-plus"></i> Thêm Sự kiện</button>
+                        </div>
+                        <div class="card-body">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Mã SK</th>
+                                        <th>Tên Sự kiện</th>
+                                        <th>Thời gian</th>
+                                        <th>Số khách</th>
+                                        <th>Trạng thái</th>
+                                        <th>Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="eventsTableBody">
+                                    </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="eventModal" class="modal hidden">
+                    <div class="modal-content">
+                        <span class="modal-close" id="closeEventModal">&times;</span>
+                        <h2 id="eventModalTitle">Thêm Sự kiện mới</h2>
+                        <form id="eventForm">
+                            <input type="hidden" id="eventId">
+                            <div class="form-group">
+                                <label class="form-label">Tên Sự kiện</label>
+                                <input type="text" class="form-control" id="eventName" placeholder="Nhập tên sự kiện" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Thời gian</label>
+                                <input type="datetime-local" class="form-control" id="eventTime" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Số lượng Khách</label>
+                                <input type="number" class="form-control" id="eventGuests" min="1" required>
+                            </div>
+                             <div class="form-group">
+                                <label class="form-label">Trạng thái</label>
+                                <select class="form-control" id="eventStatus" required>
+                                    <option value="Đã đặt">Đã đặt</option>
+                                    <option value="Hoàn thành">Hoàn thành</option>
+                                    <option value="Đã hủy">Đã hủy</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Lưu</button>
+                        </form>
+                    </div>
+                </div>
+                
+                <div id="customerManagement" class="page hidden">
+                    <h1 class="page-title">Quản lý Khách hàng</h1>
+                    <div class="card">
+                        <div class="card-header">
+                            <span>Danh sách Khách hàng</span>
+                            <button class="btn btn-primary" id="showAddCustomerModal"><i class="fas fa-user-plus"></i> Thêm Khách hàng</button>
+                        </div>
+                        <div class="card-body">
+                            <p>Nội dung quản lý thông tin khách hàng, tích điểm, lịch sử giao dịch...</p>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Tên Khách hàng</th>
+                                        <th>Email</th>
+                                        <th>Điện thoại</th>
+                                        <th>Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="customersTableBody">
+                                     </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="branchManagement" class="page hidden">
+                    <h1 class="page-title">Quản lý Nhánh</h1>
+                    <div class="card">
+                        <div class="card-header">
+                                <div style="display:flex; align-items:center; gap:8px; width:100%">
+                                    <span style="flex:1">Danh sách Nhánh</span>
+                                    <div style="display:flex; gap:8px; align-items:center">
+                                        <input id="branchSearch" class="form-control" placeholder="Tìm theo tên/địa chỉ..." style="width:250px;" />
+                                        <button class="btn btn-secondary" id="refreshBranchesBtn" title="Làm mới danh sách"><i class="fas fa-sync-alt"></i></button>
+                                        <button class="btn btn-primary" id="showAddBranchModal"><i class="fas fa-plus"></i> Thêm Nhánh</button>
+                                    </div>
+                                </div>
+                        </div>
+                        <div class="card-body">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Tên Nhánh</th>
+                                        <th>Địa chỉ</th>
+                                        <th>Liên hệ</th>
+                                        <th>Trạng thái</th>
+                                        <th>Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="branchesTableBody">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="inventoryManagement" class="page hidden">
+                    <h1 class="page-title">Quản lý Kho</h1>
+                    <div class="card">
+                        <div class="card-header">
+                            <span>Danh sách Nguyên vật liệu</span>
+                            <button class="btn btn-primary"><i class="fas fa-box"></i> Nhập Kho</button>
+                        </div>
+                        <div class="card-body">
+                            <p>Nội dung quản lý nhập xuất tồn kho nguyên vật liệu...</p>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Mã NVL</th>
+                                        <th>Tên Nguyên vật liệu</th>
+                                        <th>Số lượng tồn</th>
+                                        <th>Đơn vị</th>
+                                        <th>Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>NVL001</td>
+                                        <td>Thịt bò</td>
+                                        <td>20</td>
+                                        <td>kg</td>
+                                        <td>
+                                            <button class="btn btn-warning btn-sm"><i class="fas fa-edit"></i> Sửa</button>
+                                            <button class="btn btn-secondary btn-sm"><i class="fas fa-sign-out-alt"></i> Xuất kho</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="promotionManagement" class="page hidden">
+                    <h1 class="page-title">Khuyến mãi/Giảm giá</h1>
+                    <div class="card">
+                        <div class="card-header">
+                            <span>Danh sách Chương trình Khuyến mãi</span>
+                            <button class="btn btn-primary"><i class="fas fa-percentage"></i> Tạo Khuyến mãi</button>
+                        </div>
+                        <div class="card-body">
+                            <p>Nội dung quản lý các chương trình khuyến mãi, mã giảm giá...</p>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Mã KM</th>
+                                        <th>Tên Chương trình</th>
+                                        <th>Giảm giá</th>
+                                        <th>Trạng thái</th>
+                                        <th>Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>KM001</td>
+                                        <td>Giảm 10% Khai trương</td>
+                                        <td>10%</td>
+                                        <td>Đang áp dụng</td>
+                                        <td>
+                                            <button class="btn btn-warning btn-sm"><i class="fas fa-edit"></i> Sửa</button>
+                                            <button class="btn btn-danger btn-sm"><i class="fas fa-times-circle"></i> Kết thúc</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="reportManagement" class="page hidden">
+                    <h1 class="page-title">Báo cáo & Thống kê</h1>
+                    <div class="card">
+                        <div class="card-header">
+                            <span>Chọn Loại Báo cáo</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="btn-group">
+                                <button class="btn btn-primary"><i class="fas fa-chart-line"></i> Báo cáo Doanh thu</button>
+                                <button class="btn btn-secondary"><i class="fas fa-chart-bar"></i> Báo cáo Tồn kho</button>
+                                <button class="btn btn-info"><i class="fas fa-chart-pie"></i> Báo cáo Đơn hàng</button>
+                            </div>
+                            <hr>
+                            <p>Phần này sẽ hiển thị biểu đồ và dữ liệu báo cáo chi tiết theo loại đã chọn.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="systemConfig" class="page hidden">
+                    <h1 class="page-title">Cấu hình Hệ thống</h1>
+                    <div class="card">
+                        <div class="card-header">
+                            <span>Cài đặt chung</span>
+                            <button class="btn btn-success"><i class="fas fa-save"></i> Lưu Cấu hình</button>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label class="form-label">Tên Nhà hàng</label>
+                                <input type="text" class="form-control" value="Nhà hàng ABC">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Múi giờ</label>
+                                <select class="form-control">
+                                    <option>GMT+7:00 (Hà Nội)</option>
+                                </select>
+                            </div>
+                            <p>Nội dung cấu hình hệ thống, thông tin nhà hàng, quyền hạn...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="customerLoginPage" class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <h2>Đăng nhập Khách hàng</h2>
+                <p>Nhập thông tin tài khoản của bạn</p>
+            </div>
+            <form id="customerLoginForm">
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" name="email" placeholder="Nhập email" required value="customer@gmail.com">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Mật khẩu</label>
+                    <input type="password" class="form-control" name="password" placeholder="Nhập mật khẩu" required value="123456">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Đăng nhập</button>
+            </form>
+            <div class="login-footer">
+                <p>Chưa có tài khoản? <a href="#" id="showCustomerRegister">Đăng ký ngay</a></p>
+                <p><a href="#" id="showStaffLogin">Đăng nhập nhân viên</a></p>
+            </div>
+        </div>
+    </div>
+
+    <div id="customerRegisterPage" class="login-container hidden">
+        <div class="login-card">
+            <div class="login-header">
+                <h2>Đăng ký Tài khoản Khách hàng</h2>
+                <p>Tạo tài khoản để đặt bàn và nhận ưu đãi</p>
+            </div>
+            <form id="customerRegisterForm">
+                <div class="form-group">
+                    <label class="form-label">Họ và tên</label>
+                    <input type="text" class="form-control" name="name" placeholder="Nhập họ và tên" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" name="email" placeholder="Nhập email" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Số điện thoại</label>
+                    <input type="tel" class="form-control" name="phone" placeholder="Nhập số điện thoại" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Mật khẩu</label>
+                    <input type="password" class="form-control" name="password" placeholder="Nhập mật khẩu" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Đăng ký</button>
+            </form>
+            <div class="login-footer">
+                <p>Đã có tài khoản? <a href="#" id="showCustomerLogin">Đăng nhập ngay</a></p>
+            </div>
+        </div>
+    </div>
+
+    <div id="customerDashboard" class="container hidden">
+        <div class="main-content" style="margin-left: 0;">
+            <div class="top-nav">
+                <h3>Nhà hàng ABC - Đặt bàn trực tuyến</h3>
+                <div class="user-info">
+                    <div class="user-avatar">KH</div>
+                    <span id="customerName">Khách hàng</span>
+                    <button class="btn btn-secondary btn-sm" onclick="customerLogout()">Đăng xuất</button>
+                </div>
+            </div>
+            <div class="content-area">
+                <h1 class="page-title">Chào mừng Quý khách</h1>
+                <div class="card">
+                    <div class="card-header">
+                        <span>Đặt bàn trực tuyến</span>
+                    </div>
+                    <div class="card-body">
+                        <form id="bookingForm">
+                            <div class="form-group">
+                                <label class="form-label">Ngày đặt</label>
+                                <input type="date" class="form-control" id="bookingDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Giờ đặt</label>
+                                <input type="time" class="form-control" id="bookingTime" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Số lượng khách</label>
+                                <input type="number" class="form-control" id="bookingGuests" min="1" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Yêu cầu đặc biệt</label>
+                                <textarea class="form-control" id="specialRequests" rows="3"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-success">Đặt bàn</button>
+                        </form>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <span>Lịch sử đặt bàn</span>
+                    </div>
+                    <div class="card-body">
+                        <div id="bookingHistory">
+                            <p>Chưa có lịch sử đặt bàn</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+// ====================================================================
+// --- KHAI BÁO BIẾN VÀ API ENDPOINTS ---
+// ====================================================================
+const ADMIN_API_BASE = 'http://localhost:3000/api';
+const CUSTOMER_API_BASE = 'http://localhost:3001/api/customer';
+
+let currentUser = null;
+let authToken = null;
+let currentDishes = [];
+let currentTables = [];
+let currentOrderItems = [];
+let currentBranches = []; // cached branches for branch management (search/filter)
+
+// ====================================================================
+// --- HÀM TIỆN ÍCH (Utility) ---
+// ====================================================================
+
+// Hàm gọi API Admin với xác thực
+async function apiCall(endpoint, options = {}) {
+    const config = {
+        headers: {
+            'Content-Type': 'application/json',
+            ...(authToken && { 'Authorization': `Bearer ${authToken}` })
+        },
+        ...options
+    };
+    
+    try {
+        const response = await fetch(`${ADMIN_API_BASE}${endpoint}`, config);
+        const data = await response.json();
+        
+        if (!response.ok) {
+            if (response.status === 401) {
+                // Token hết hạn hoặc không hợp lệ
+                alert('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+                logout();
+            }
+            throw new Error(data.message || 'Có lỗi xảy ra');
+        }
+        
+        return data;
+    } catch (error) {
+        console.error('API Error:', error);
+        alert(error.message);
+        throw error;
+    }
+}
+
+// Hàm gọi API Khách hàng
+async function customerApiCall(endpoint, options = {}) {
+    const customerToken = localStorage.getItem('customerToken');
+    const config = {
+        headers: {
+            'Content-Type': 'application/json',
+            ...(customerToken && { 'Authorization': `Bearer ${customerToken}` })
+        },
+        ...options
+    };
+    
+    try {
+        const response = await fetch(`${CUSTOMER_API_BASE}${endpoint}`, config);
+        const data = await response.json();
+        
+        if (!response.ok) {
+             if (response.status === 401) {
+                alert('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+                customerLogout();
+            }
+            throw new Error(data.message || 'Có lỗi xảy ra');
+        }
+        
+        return data;
+    } catch (error) {
+        console.error('Customer API Error:', error);
+        alert(error.message);
+        throw error;
+    }
+}
+
+
+function closeModal(modalId) {
+    document.getElementById(modalId).classList.add('hidden');
+}
+
+function showModal(modalId) {
+     document.getElementById(modalId).classList.remove('hidden');
+}
+
+function formatCurrency(number) {
+    return number.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+}
+
+function formatDateTime(isoString) {
+    if (!isoString) return 'N/A';
+    const date = new Date(isoString);
+    return date.toLocaleString('vi-VN');
+}
+
+// ====================================================================
+// --- XỬ LÝ CHUYỂN TRANG VÀ GIAO DIỆN CHUNG (UI) ---
+// ====================================================================
+
+// --- Chuyển đổi qua lại giữa các trang Login ---
+document.getElementById('showRegister').addEventListener('click', (e) => {
+    e.preventDefault();
+    document.getElementById('loginPage').classList.add('hidden');
+    document.getElementById('registerPage').classList.remove('hidden');
+});
+
+document.getElementById('showLogin').addEventListener('click', (e) => {
+    e.preventDefault();
+    document.getElementById('registerPage').classList.add('hidden');
+    document.getElementById('loginPage').classList.remove('hidden');
+});
+
+document.getElementById('showCustomerLoginFromStaff').addEventListener('click', (e) => {
+    e.preventDefault();
+    document.getElementById('loginPage').classList.add('hidden');
+    document.getElementById('customerLoginPage').classList.remove('hidden');
+});
+
+document.getElementById('showStaffLogin').addEventListener('click', (e) => {
+    e.preventDefault();
+    document.getElementById('customerLoginPage').classList.add('hidden');
+    document.getElementById('customerRegisterPage').classList.add('hidden');
+    document.getElementById('loginPage').classList.remove('hidden');
+});
+
+// --- Sidebar Toggle ---
+document.querySelector('.toggle-sidebar').addEventListener('click', function() {
+    document.querySelector('.sidebar').classList.toggle('collapsed');
+    document.querySelector('.main-content').classList.toggle('expanded');
+});
+
+// --- Menu Navigation ---
+function navigateToPage(pageId) {
+    // Ẩn tất cả các trang
+    document.querySelectorAll('.page').forEach(page => page.classList.add('hidden'));
+    
+    // Hiển thị trang được chọn
+    const pageElement = document.getElementById(pageId);
+    if (pageElement) {
+        pageElement.classList.remove('hidden');
+    }
+
+    // Xử lý active class trên menu
+    document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
+    document.querySelectorAll('.submenu-item').forEach(i => i.classList.remove('active'));
+    
+    const menuItem = document.querySelector(`.menu-item[data-page="${pageId}"]`);
+    const submenuItem = document.querySelector(`.submenu-item[data-page="${pageId}"]`);
+
+    if (menuItem) {
+        menuItem.classList.add('active');
+    } else if (submenuItem) {
+        submenuItem.classList.add('active');
+        submenuItem.closest('.submenu').classList.add('active');
+        submenuItem.closest('.submenu').previousElementSibling.classList.add('active');
+    }
+    
+    // Tải dữ liệu tương ứng cho trang
+    loadDataForPage(pageId);
+}
+
+document.querySelectorAll('.menu-item, .submenu-item').forEach(item => {
+    item.addEventListener('click', function() {
+        const pageId = this.getAttribute('data-page');
+        if (pageId) {
+            navigateToPage(pageId);
+        } else if (this.getAttribute('data-toggle') === 'submenu') {
+            // Xử lý submenu toggle
+            const submenu = this.nextElementSibling;
+            const chevron = this.querySelector('.fa-chevron-down, .fa-chevron-up');
+            
+            const isActive = submenu.classList.toggle('active');
+            if (chevron) {
+                chevron.classList.toggle('fa-chevron-down', !isActive);
+                chevron.classList.toggle('fa-chevron-up', isActive);
+            }
+            this.classList.add('active');
+        }
+    });
+});
+        
+// --- Tab Navigation ---
+document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+        // Tắt active của các tab và content cùng cấp
+        const tabContainer = this.closest('.tabs');
+        tabContainer.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        tabContainer.parentElement.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+        
+        // Active tab và content được chọn
+        this.classList.add('active');
+        const tabId = this.getAttribute('data-tab');
+        document.getElementById(tabId).classList.add('active');
+    });
+});
+
+// ====================================================================
+// --- XÁC THỰC NHÂN VIÊN (Staff Auth) ---
+// ====================================================================
+
+document.getElementById('loginForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const username = this.username.value;
+    const password = this.password.value;
+    
+    try {
+        const response = await fetch(`${ADMIN_API_BASE}/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.message || 'Đăng nhập thất bại');
+        }
+        
+        authToken = data.token;
+        currentUser = data.user;
+        
+        document.getElementById('loginPage').classList.add('hidden');
+        document.getElementById('app').classList.remove('hidden');
+        document.getElementById('customerLoginPage').classList.add('hidden'); // Ẩn luôn trang khách
+        
+        // Cập nhật thông tin người dùng
+        document.querySelector('.user-avatar').textContent = 
+            currentUser.name.split(' ').map(n => n[0]).join('').toUpperCase();
+        document.querySelector('.user-info span').textContent = currentUser.name;
+
+        // Tải dữ liệu cho dashboard
+        loadDataForPage('dashboard');
+        
+    } catch (error) {
+        alert(error.message);
+    }
+});
+
+document.getElementById('registerForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const registerData = Object.fromEntries(formData.entries());
+
+    if (registerData.password !== registerData.confirmPassword) {
+        alert('Mật khẩu xác nhận không khớp!');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${ADMIN_API_BASE}/register`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(registerData)
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.message || 'Đăng ký thất bại');
+        }
+        
+        alert('Đăng ký tài khoản nhân viên thành công! Vui lòng đăng nhập.');
+        document.getElementById('registerPage').classList.add('hidden');
+        document.getElementById('loginPage').classList.remove('hidden');
+        
+    } catch (error) {
+        alert(error.message);
+    }
+});
+
+function logout() {
+    currentUser = null;
+    authToken = null;
+    document.getElementById('app').classList.add('hidden');
+    document.getElementById('loginPage').classList.remove('hidden');
+}
+
+// ====================================================================
+// --- HÀM TẢI DỮ LIỆU (Load Data) ---
+// ====================================================================
+function loadDataForPage(pageId) {
+    switch (pageId) {
+        case 'dashboard':
+            loadDashboardData();
+            loadOrders(true); // Tải 5 đơn hàng gần nhất
+            break;
+        case 'menuManagement':
+            loadDishes();
+            break;
+        case 'branchManagement':
+            loadBranches();
+            break;
+        case 'orderManagement':
+            loadOrders();
+            break;
+        case 'tableManagement':
+            loadTables();
+            break;
+        case 'staffManagement':
+            loadStaff();
+            break;
+        case 'eventManagement':
+            loadEvents();
+            break;
+        case 'paymentManagement':
+            loadOrders(false, 'Đang phục vụ'); // Tải đơn hàng chờ thanh toán
+            break;
+        case 'customerManagement':
+            loadAdminCustomers();
+            break;
+    }
+}
+
+async function loadDashboardData() {
+    try {
+        const data = await apiCall('/dashboard');
+        document.getElementById('dash-orders').textContent = data.todayOrders;
+        document.getElementById('dash-revenue').textContent = formatCurrency(data.todayRevenue);
+        document.getElementById('dash-tables').textContent = `${data.occupiedTables}/${data.totalTables}`;
+        document.getElementById('dash-stock').textContent = data.lowStockItems;
+    } catch (error) {
+        console.error('Error loading dashboard data:', error);
+    }
+}
+
+async function loadDishes() {
+    try {
+        const dishes = await apiCall('/dishes');
+        currentDishes = dishes; // Lưu lại để dùng cho việc tạo đơn hàng
+        updateDishesTable(dishes);
+    } catch (error) {
+        console.error('Error loading dishes:', error);
+    }
+}
+
+async function loadOrders(isDashboard = false, statusFilter = null) {
+     try {
+        let endpoint = '/orders';
+        if (isDashboard) {
+            endpoint = '/orders?limit=5';
+        } else if (statusFilter) {
+            endpoint = `/orders?status=${encodeURIComponent(statusFilter)}`;
+        }
+
+        const orders = await apiCall(endpoint);
+        
+        if (isDashboard) {
+            updateRecentOrdersTable(orders);
+        } else if (statusFilter === 'Đang phục vụ') {
+            updatePaymentTable(orders);
+        } else {
+            updateOrdersTable(orders);
+        }
+    } catch (error) {
+        console.error('Error loading orders:', error);
+    }
+}
+
+async function loadTables() {
+    try {
+        const tables = await apiCall('/tables');
+        currentTables = tables; // Lưu lại
+        updateTablesGrid(tables);
+    } catch (error) {
+        console.error('Error loading tables:', error);
+    }
+}
+
+async function loadStaff() {
+    try {
+        const staff = await apiCall('/staff');
+        updateStaffTable(staff);
+    } catch (error) {
+        console.error('Error loading staff:', error);
+    }
+}
+
+async function loadEvents() {
+    try {
+        const events = await apiCall('/events');
+        updateEventsTable(events);
+    } catch (error) {
+        console.error('Error loading events:', error);
+    }
+}
+
+async function loadAdminCustomers() {
+     try {
+        const customers = await apiCall('/customers');
+        updateAdminCustomersTable(customers);
+    } catch (error) {
+        console.error('Error loading customers for admin:', error);
+    }
+}
+
+// ====================================================================
+// --- CẬP NHẬT GIAO DIỆN (Update UI) ---
+// ====================================================================
+
+function getStatusBadge(status) {
+    switch (status) {
+        case 'Đã thanh toán': return 'badge-success';
+        case 'Đang phục vụ': return 'badge-warning';
+        case 'Đang chế biến': return 'badge-danger';
+        case 'Đã đặt': return 'badge-success';
+        case 'Hoàn thành': return 'badge-success';
+        case 'Đã hủy': return 'badge-danger';
+        case 'Còn hàng': return 'badge-success';
+        case 'Hết hàng': return 'badge-warning';
+        case 'Hoạt động': return 'badge-success';
+        case 'Ngưng': return 'badge-warning';
+        default: return 'badge-secondary';
+    }
+}
+
+function updateRecentOrdersTable(orders) {
+    const tbody = document.getElementById('recentOrdersTableBody');
+    tbody.innerHTML = '';
+    if (orders.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5">Không có đơn hàng nào gần đây.</td></tr>';
+        return;
+    }
+    orders.forEach(order => {
+        const row = `
+            <tr>
+                <td>${order.id}</td>
+                <td>${order.table}</td>
+                <td>${formatDateTime(order.time)}</td>
+                <td>${formatCurrency(order.total)}</td>
+                <td><span class="badge ${getStatusBadge(order.status)}">${order.status}</span></td>
+            </tr>
+        `;
+        tbody.innerHTML += row;
+    });
+}
+
+function updatePaymentTable(orders) {
+    const tbody = document.getElementById('paymentTableBody');
+    tbody.innerHTML = '';
+    if (orders.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5">Không có đơn hàng nào chờ thanh toán.</td></tr>';
+        return;
+    }
+    orders.forEach(order => {
+        const row = `
+            <tr>
+                <td>${order.id}</td>
+                <td>${order.table}</td>
+                <td>${formatDateTime(order.time)}</td>
+                <td>${formatCurrency(order.total)}</td>
+                <td>
+                    <button class="btn btn-success btn-sm" onclick="processPayment('${order.id}')"><i class="fas fa-hand-holding-usd"></i> Thanh toán</button>
+                    <button class="btn btn-primary btn-sm" onclick="openOrderDetailModal('${order.id}')"><i class="fas fa-eye"></i> Xem</button>
+                </td>
+            </tr>
+        `;
+        tbody.innerHTML += row;
+    });
+}
+
+function updateOrdersTable(orders) {
+    const tbody = document.getElementById('ordersTableBody');
+    tbody.innerHTML = '';
+     if (orders.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6">Không có đơn hàng nào.</td></tr>';
+        return;
+    }
+    orders.forEach(order => {
+        const row = `
+            <tr>
+                <td>${order.id}</td>
+                <td>${order.table}</td>
+                <td>${formatDateTime(order.time)}</td>
+                <td>${formatCurrency(order.total)}</td>
+                <td><span class="badge ${getStatusBadge(order.status)}">${order.status}</span></td>
+                <td>
+                    <button class="btn btn-primary btn-sm" onclick="openOrderDetailModal('${order.id}')"><i class="fas fa-eye"></i> Xem</button>
+                    <button class="btn btn-danger btn-sm" onclick="confirmDeleteOrder('${order.id}')"><i class="fas fa-trash-alt"></i> Xóa</button>
+                </td>
+            </tr>
+        `;
+        tbody.innerHTML += row;
+    });
+}
+
+function updateDishesTable(dishes) {
+    const tbody = document.getElementById('dishesTableBody');
+    tbody.innerHTML = '';
+    dishes.forEach(dish => {
+        const row = `
+            <tr>
+                <td>${dish.id}</td>
+                <td>${dish.name}</td>
+                <td>${dish.category}</td>
+                <td>${formatCurrency(dish.price)}</td>
+                <td><span class="badge ${getStatusBadge(dish.status)}">${dish.status}</span></td>
+                <td>
+                    <button class="btn btn-warning btn-sm" onclick="openEditDishModal('${dish.id}')"><i class="fas fa-edit"></i> Sửa</button>
+                    <button class="btn btn-danger btn-sm" onclick="confirmDeleteDish('${dish.id}', '${dish.name}')"><i class="fas fa-trash-alt"></i> Xóa</button>
+                </td>
+            </tr>
+        `;
+        tbody.innerHTML += row;
+    });
+}
+
+function updateTablesGrid(tables) {
+    const grid = document.getElementById('tablesGrid');
+    grid.innerHTML = '';
+    tables.forEach(table => {
+        let statusClass = '';
+        switch(table.status) {
+            case 'Trống': statusClass = 'available'; break;
+            case 'Đang dùng': statusClass = 'occupied'; break;
+            case 'Đã đặt': statusClass = 'reserved'; break;
+        }
+        const item = `
+            <div class="table-item ${statusClass}" 
+                 data-table-id="${table.id}" 
+                 data-status="${table.status}" 
+                 data-order-id="${table.orderId || ''}">
+                <div class="table-number">${table.name}</div>
+                <div class="table-status">${table.status}</div>
+            </div>
+        `;
+        grid.innerHTML += item;
+    });
+}
+
+function updateStaffTable(staffList) {
+    const tbody = document.getElementById('staffTableBody');
+    tbody.innerHTML = '';
+    staffList.forEach(staff => {
+        const row = `
+            <tr>
+                <td>${staff.id}</td>
+                <td>${staff.name}</td>
+                <td>${staff.role}</td>
+                <td>${staff.username}</td>
+                <td>
+                    <button class="btn btn-warning btn-sm" onclick="openEditStaffModal('${staff.id}')"><i class="fas fa-edit"></i> Sửa</button>
+                    <button class="btn btn-danger btn-sm" onclick="confirmDeleteStaff('${staff.id}', '${staff.name}')"><i class="fas fa-user-slash"></i> Xóa</button>
+                </td>
+            </tr>
+        `;
+        tbody.innerHTML += row;
+    });
+}
+
+function updateEventsTable(events) {
+    const tbody = document.getElementById('eventsTableBody');
+    tbody.innerHTML = '';
+    events.forEach(event => {
+        const row = `
+            <tr>
+                <td>${event.id}</td>
+                <td>${event.name}</td>
+                <td>${formatDateTime(event.time)}</td>
+                <td>${event.guests}</td>
+                <td><span class="badge ${getStatusBadge(event.status)}">${event.status}</span></td>
+                <td>
+                    <button class="btn btn-warning btn-sm" onclick="openEditEventModal('${event.id}')"><i class="fas fa-edit"></i> Sửa</button>
+                    <button class="btn btn-danger btn-sm" onclick="confirmDeleteEvent('${event.id}', '${event.name}')"><i class="fas fa-trash-alt"></i> Hủy</button>
+                </td>
+            </tr>
+        `;
+        tbody.innerHTML += row;
+    });
+}
+
+function updateAdminCustomersTable(customers) {
+    const tbody = document.getElementById('customersTableBody');
+    tbody.innerHTML = '';
+    if (customers.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5">Không có khách hàng nào.</td></tr>';
+        return;
+    }
+    customers.forEach(customer => {
+        const row = `
+            <tr>
+                <td>${customer.id}</td>
+                <td>${customer.name}</td>
+                <td>${customer.email}</td>
+                <td>${customer.phone}</td>
+                <td>
+                    <button class="btn btn-warning btn-sm" onclick="openEditCustomerModal('${customer.id}')"><i class="fas fa-edit"></i> Sửa</button>
+                    <button class="btn btn-danger btn-sm" onclick="confirmDeleteCustomer('${customer.id}', '${customer.name}')"><i class="fas fa-user-slash"></i> Xóa</button>
+                    <button class="btn btn-primary btn-sm" onclick="alert('Xem lịch sử chưa cài đặt')"><i class="fas fa-eye"></i> Xem Lịch sử</button>
+                </td>
+            </tr>
+        `;
+        tbody.innerHTML += row;
+    });
+}
+
+// ====================================================================
+// --- QUẢN LÝ MÓN ĂN (Dish) ---
+// ====================================================================
+const dishModal = document.getElementById('dishModal');
+const dishForm = document.getElementById('dishForm');
+
+document.getElementById('showAddDishModal').addEventListener('click', () => {
+    dishForm.reset();
+    document.getElementById('dishId').value = '';
+    document.getElementById('dishModalTitle').textContent = 'Thêm Món ăn mới';
+    showModal('dishModal');
+});
+
+document.getElementById('closeDishModal').addEventListener('click', () => closeModal('dishModal'));
+
+async function openEditDishModal(dishId) {
+    try {
+        const dish = await apiCall(`/dishes/${dishId}`);
+        document.getElementById('dishId').value = dish.id;
+        document.getElementById('dishName').value = dish.name;
+        document.getElementById('dishPrice').value = dish.price;
+        document.getElementById('dishCategory').value = dish.category;
+        document.getElementById('dishStatus').value = dish.status;
+        document.getElementById('dishModalTitle').textContent = 'Sửa Món ăn: ' + dish.name;
+        showModal('dishModal');
+    } catch (error) {
+        console.error('Error fetching dish details:', error);
+    }
+}
+
+dishForm.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const id = document.getElementById('dishId').value;
+    const dishData = {
+        name: document.getElementById('dishName').value,
+        category: document.getElementById('dishCategory').value,
+        price: document.getElementById('dishPrice').value,
+        status: document.getElementById('dishStatus').value,
+    };
+    
+    try {
+        if (id) {
+            await apiCall(`/dishes/${id}`, {
+                method: 'PUT',
+                body: JSON.stringify(dishData)
+            });
+            alert(`Đã cập nhật món ăn "${dishData.name}" thành công!`);
+        } else {
+            await apiCall('/dishes', {
+                method: 'POST',
+                body: JSON.stringify(dishData)
+            });
+            alert(`Đã thêm món ăn "${dishData.name}" thành công!`);
+        }
+        
+        closeModal('dishModal');
+        loadDishes();
+    } catch (error) {
+        console.error('Error saving dish:', error);
+    }
+});
+
+async function confirmDeleteDish(dishId, dishName) {
+    if (confirm(`Bạn có chắc chắn muốn xóa món ăn "${dishName}" không?`)) {
+        try {
+            await apiCall(`/dishes/${dishId}`, { method: 'DELETE' });
+            alert(`Đã xóa món ăn: ${dishName}`);
+            loadDishes();
+        } catch (error) {
+            console.error('Error deleting dish:', error);
+        }
+    }
+}
+
+// ====================================================================
+// --- QUẢN LÝ ĐƠN HÀNG (Order) ---
+// ====================================================================
+
+// Create-order helpers: manage selected items UI and behavior
+const createOrderTableSelect = document.getElementById('createOrderTable');
+const createOrderDishesSelect = document.getElementById('createOrderDishes');
+const selectedOrderItemsContainer = document.getElementById('selectedOrderItems');
+
+function renderSelectedOrderItems() {
+    if (!currentOrderItems || currentOrderItems.length === 0) {
+        selectedOrderItemsContainer.innerHTML = '<p>Chưa có món nào được chọn.</p>';
+        return;
+    }
+    let html = `<table class="table"><thead><tr><th>Món</th><th>SL</th><th>Giá</th><th>Thành tiền</th><th>Hành động</th></tr></thead><tbody>`;
+    currentOrderItems.forEach(item => {
+        html += `
+            <tr data-dish-id="${item.dishId}">
+                <td>${item.name}</td>
+                <td><input type="number" min="1" value="${item.quantity}" data-dish-id="${item.dishId}" class="order-qty" style="width:70px"></td>
+                <td>${formatCurrency(item.price)}</td>
+                <td>${formatCurrency(item.price * item.quantity)}</td>
+                <td><button type="button" class="btn btn-danger btn-sm remove-item" data-dish-id="${item.dishId}">Xóa</button></td>
+            </tr>
+        `;
+    });
+
+    // calculate total
+    const total = currentOrderItems.reduce((s, it) => s + (it.price * it.quantity), 0);
+    html += `</tbody><tfoot><tr><td colspan="3"><strong>Tổng cộng:</strong></td><td colspan="2"><strong>${formatCurrency(total)}</strong></td></tr></tfoot></table>`;
+    selectedOrderItemsContainer.innerHTML = html;
+
+    // attach listeners for quantity changes and remove buttons
+    selectedOrderItemsContainer.querySelectorAll('.order-qty').forEach(input => {
+        input.addEventListener('change', (e) => {
+            const id = e.target.getAttribute('data-dish-id');
+            const qty = parseInt(e.target.value) || 1;
+            const idx = currentOrderItems.findIndex(it => it.dishId == id);
+            if (idx >= 0) {
+                currentOrderItems[idx].quantity = qty;
+                renderSelectedOrderItems();
+            }
+        });
+    });
+
+    selectedOrderItemsContainer.querySelectorAll('.remove-item').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const id = e.target.getAttribute('data-dish-id');
+            currentOrderItems = currentOrderItems.filter(it => it.dishId != id);
+            renderSelectedOrderItems();
+        });
+    });
+}
+
+function addDishToCurrentOrder(dishId) {
+    if (!dishId) return;
+    const dish = currentDishes.find(d => d.id == dishId);
+    if (!dish) return;
+
+    // If already in list, increment quantity
+    const existing = currentOrderItems.find(it => it.dishId == dishId);
+    if (existing) {
+        existing.quantity += 1;
+    } else {
+        currentOrderItems.push({ dishId: dish.id, name: dish.name, price: dish.price, quantity: 1 });
+    }
+    renderSelectedOrderItems();
+}
+
+// When adding from dropdown
+createOrderDishesSelect.addEventListener('change', function() {
+    const dishId = this.value;
+    if (dishId) {
+        addDishToCurrentOrder(dishId);
+        this.value = '';
+    }
+});
+
+// Helper to open create order modal for a specific table
+async function openCreateOrderForTable(tableId) {
+    try {
+        await loadTables();
+        await loadDishes();
+    } catch (err) {
+        console.error('Error loading tables/dishes before create order modal:', err);
+    }
+
+    // Populate tables select and set value
+    createOrderTableSelect.innerHTML = '<option value="">-- Chọn bàn --</option>';
+    const availableTables = currentTables; // show all, allow selecting occupied if desired
+    availableTables.forEach(t => {
+        createOrderTableSelect.innerHTML += `<option value="${t.id}">${t.name} (${t.status})</option>`;
+    });
+    createOrderTableSelect.value = tableId;
+
+    // Populate dishes select
+    createOrderDishesSelect.innerHTML = '<option value="">-- Chọn món --</option>';
+    const availableDishes = currentDishes.filter(d => d.status === 'Còn hàng');
+    availableDishes.forEach(d => {
+        createOrderDishesSelect.innerHTML += `<option value="${d.id}">${d.name} (${formatCurrency(d.price)})</option>`;
+    });
+
+    // Reset current items and render
+    currentOrderItems = [];
+    renderSelectedOrderItems();
+
+    showModal('createOrderModal');
+}
+
+// Open modal: refresh tables & dishes then populate selects and reset current items
+document.getElementById('showCreateOrderModal').addEventListener('click', async () => {
+    try {
+        await loadTables();
+        await loadDishes();
+    } catch (err) {
+        console.error('Error loading tables/dishes before create order modal:', err);
+    }
+
+    // Populate tables select with available (Trống)
+    createOrderTableSelect.innerHTML = '<option value="">-- Chọn bàn --</option>';
+    const availableTables = currentTables.filter(t => t.status === 'Trống');
+    availableTables.forEach(t => {
+        createOrderTableSelect.innerHTML += `<option value="${t.id}">${t.name} (${t.status})</option>`;
+    });
+
+    // Populate dishes select
+    createOrderDishesSelect.innerHTML = '<option value="">-- Chọn món --</option>';
+    const availableDishes = currentDishes.filter(d => d.status === 'Còn hàng');
+    availableDishes.forEach(d => {
+        createOrderDishesSelect.innerHTML += `<option value="${d.id}">${d.name} (${formatCurrency(d.price)})</option>`;
+    });
+
+    // Reset current items and render
+    currentOrderItems = [];
+    renderSelectedOrderItems();
+
+    showModal('createOrderModal');
+});
+
+document.getElementById('closeCreateOrderModal').addEventListener('click', () => closeModal('createOrderModal'));
+document.getElementById('closeOrderDetailModal').addEventListener('click', () => closeModal('orderDetailModal'));
+
+async function openOrderDetailModal(orderId) {
+    try {
+        const order = await apiCall(`/orders/${orderId}`);
+        document.getElementById('orderDetailId').textContent = order.id;
+        document.getElementById('orderDetailTable').textContent = order.table;
+        document.getElementById('orderDetailTime').textContent = formatDateTime(order.time);
+        document.getElementById('orderDetailStatus').innerHTML = `<span class="badge ${getStatusBadge(order.status)}">${order.status}</span>`;
+        document.getElementById('orderDetailTotal').textContent = formatCurrency(order.total);
+        
+        const itemsTbody = document.getElementById('orderDetailItems');
+        itemsTbody.innerHTML = '';
+        order.items.forEach(item => {
+            itemsTbody.innerHTML += `
+                <tr>
+                    <td>${item.name}</td>
+                    <td>${item.quantity}</td>
+                    <td>${formatCurrency(item.price)}</td>
+                    <td>${formatCurrency(item.quantity * item.price)}</td>
+                </tr>
+            `;
+        });
+        
+        showModal('orderDetailModal');
+    } catch (error) {
+        console.error('Error fetching order details:', error);
+    }
+}
+
+async function confirmDeleteOrder(orderId) {
+    if (confirm(`Bạn có chắc chắn muốn xóa đơn hàng ${orderId} không?`)) {
+        try {
+            await apiCall(`/orders/${orderId}`, { method: 'DELETE' });
+            alert(`Đã xóa đơn hàng: ${orderId}`);
+            loadOrders();
+        } catch (error) {
+            console.error('Error deleting order:', error);
+        }
+    }
+}
+
+// Create order submit: validate and POST to API
+document.getElementById('createOrderForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const tableId = document.getElementById('createOrderTable').value;
+    if (!tableId) { alert('Vui lòng chọn bàn'); return; }
+
+    if (!currentOrderItems || currentOrderItems.length === 0) {
+        alert('Vui lòng thêm ít nhất một món để tạo đơn hàng.');
+        return;
+    }
+
+    const itemsPayload = currentOrderItems.map(it => ({ dishId: it.dishId, quantity: it.quantity }));
+
+    try {
+        const created = await apiCall('/orders', {
+            method: 'POST',
+            body: JSON.stringify({ tableId: tableId, items: itemsPayload, total: currentOrderItems.reduce((s,it)=>s + (it.price*it.quantity),0) })
+        });
+
+        alert('Tạo đơn hàng thành công: ' + (created.id || ''));
+        currentOrderItems = [];
+        renderSelectedOrderItems();
+        closeModal('createOrderModal');
+        loadOrders();
+        loadTables();
+    } catch (err) {
+        console.error('Error creating order:', err);
+        alert(err.message || 'Tạo đơn hàng thất bại');
+    }
+});
+
+// --- Order helpers: total calculation and preview ---
+function calculateOrderTotal() {
+    return currentOrderItems.reduce((s, it) => s + (it.price * it.quantity), 0);
+}
+
+function showOrderPreview() {
+    const tableId = document.getElementById('createOrderTable').value;
+    if (!tableId) { alert('Vui lòng chọn bàn trước khi xem trước'); return; }
+    if (!currentOrderItems || currentOrderItems.length === 0) { alert('Chưa có món nào được chọn'); return; }
+
+    const table = currentTables.find(t => t.id == tableId) || { name: 'N/A', status: '' };
+    const preview = document.getElementById('orderPreviewContent');
+    let html = `<p><strong>Bàn:</strong> ${table.name} (${table.status})</p>`;
+    html += `<table class="table"><thead><tr><th>Món</th><th>SL</th><th>Đơn giá</th><th>Thành tiền</th></tr></thead><tbody>`;
+    currentOrderItems.forEach(it => {
+        html += `<tr><td>${it.name}</td><td>${it.quantity}</td><td>${formatCurrency(it.price)}</td><td>${formatCurrency(it.price*it.quantity)}</td></tr>`;
+    });
+    html += `</tbody><tfoot><tr><td colspan="3"><strong>Tổng cộng:</strong></td><td><strong>${formatCurrency(calculateOrderTotal())}</strong></td></tr></tfoot></table>`;
+    preview.innerHTML = html;
+    showModal('orderPreviewModal');
+}
+
+// wire preview button
+document.addEventListener('click', function(e){
+    if (e.target && e.target.id === 'previewOrder') {
+        showOrderPreview();
+    }
+});
+
+// ====================================================================
+// --- QUẢN LÝ BÀN ĂN (Table) ---
+// ====================================================================
+const tableActionModal = document.getElementById('tableActionModal');
+const tableActionTitle = document.getElementById('tableActionTitle');
+const tableActionContent = document.getElementById('tableActionContent');
+
+document.getElementById('closeTableActionModal').addEventListener('click', () => closeModal('tableActionModal'));
+
+// --- Thêm bàn & Gộp bàn UI handlers ---
+document.getElementById('showAddTableModal').addEventListener('click', () => {
+    document.getElementById('addTableForm').reset();
+    showModal('addTableModal');
+});
+document.getElementById('closeAddTableModal').addEventListener('click', () => closeModal('addTableModal'));
+
+document.getElementById('showMergeTablesModal').addEventListener('click', async () => {
+    // Render list of tables with checkboxes
+    const list = document.getElementById('mergeTablesList');
+    list.innerHTML = '';
+    currentTables.forEach(t => {
+        // only allow merge for tables that exist (include empty/occupied)
+        const checkedHtml = `
+            <div style="margin-bottom:6px">
+                <label><input type="checkbox" name="mergeTable" value="${t.id}"> ${t.name} (${t.status})</label>
+            </div>
+        `;
+        list.innerHTML += checkedHtml;
+    });
+    document.getElementById('mergeTablesForm').reset();
+    showModal('mergeTablesModal');
+});
+document.getElementById('closeMergeTablesModal').addEventListener('click', () => closeModal('mergeTablesModal'));
+
+// Add Table form submit
+document.getElementById('addTableForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const name = document.getElementById('newTableName').value.trim();
+    if (!name) { alert('Vui lòng nhập tên bàn'); return; }
+
+    try {
+        const newTable = await apiCall('/tables', {
+            method: 'POST',
+            body: JSON.stringify({ name })
+        });
+        alert('Đã thêm bàn: ' + newTable.name);
+        closeModal('addTableModal');
+        loadTables();
+    } catch (err) {
+        console.error('Error adding table:', err);
+    }
+});
+
+// Merge Tables form submit
+document.getElementById('mergeTablesForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const checked = Array.from(document.querySelectorAll('#mergeTablesList input[name="mergeTable"]:checked')).map(i => i.value);
+    const mergedName = document.getElementById('mergedTableName').value.trim();
+    if (checked.length < 2) { alert('Vui lòng chọn ít nhất 2 bàn để gộp'); return; }
+    if (!mergedName) { alert('Vui lòng nhập tên bàn gộp'); return; }
+
+    try {
+        const res = await apiCall('/tables/merge', {
+            method: 'POST',
+            body: JSON.stringify({ sourceIds: checked, name: mergedName })
+        });
+        alert('Gộp bàn thành công: ' + (res.name || ''));
+        closeModal('mergeTablesModal');
+        loadTables();
+    } catch (err) {
+        console.error('Error merging tables:', err);
+    }
+});
+
+document.getElementById('tablesGrid').addEventListener('click', function(e) {
+    let tableItem = e.target.closest('.table-item');
+    if (!tableItem) return;
+
+    const tableId = tableItem.getAttribute('data-table-id');
+    const tableData = currentTables.find(t => t.id == tableId);
+    if (!tableData) return;
+
+    tableActionTitle.textContent = `Thao tác ${tableData.name}`;
+    let formHtml = '';
+
+    if (tableData.status === 'Trống') {
+        formHtml = `
+            <p>Bàn đang **Trống**.</p>
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="openCreateOrderForTable('${tableId}'); closeModal('tableActionModal');"><i class="fas fa-plus"></i> Tạo Đơn hàng mới</button>
+                <button class="btn btn-warning" onclick="executeTableAction('${tableId}', 'reserve')"><i class="fas fa-calendar-check"></i> Đặt (Reserve) bàn</button>
+            </div>
+        `;
+    } else if (tableData.status === 'Đang dùng') {
+        const orderId = tableData.orderId;
+        formHtml = `
+            <p>Bàn đang **Đang dùng** với Đơn hàng: <span class="badge badge-danger">${orderId}</span></p>
+            <div class="btn-group">
+                <button class="btn btn-warning" onclick="openOrderDetailModal('${orderId}'); closeModal('tableActionModal');"><i class="fas fa-eye"></i> Xem Đơn hàng</button>
+                <button class="btn btn-success" onclick="processPayment('${orderId}')"><i class="fas fa-money-bill-wave"></i> Thanh toán</button>
+                <button class="btn btn-secondary" onclick="alert('Chức năng Chuyển bàn')"><i class="fas fa-exchange-alt"></i> Chuyển bàn</button>
+            </div>
+        `;
+    } else if (tableData.status === 'Đã đặt') {
+        formHtml = `
+            <p>Bàn đang **Đã đặt**.</p>
+            <div class="btn-group">
+                <button class="btn btn-success" onclick="executeTableAction('${tableId}', 'occupy')"><i class="fas fa-play"></i> Bắt đầu dùng</button>
+                <button class="btn btn-danger" onclick="executeTableAction('${tableId}', 'available')"><i class="fas fa-times"></i> Hủy đặt</button>
+            </div>
+        `;
+    }
+
+    tableActionContent.innerHTML = formHtml;
+    showModal('tableActionModal');
+});
+
+async function executeTableAction(tableId, action) {
+    let newStatus = '';
+    let body = {};
+    if (action === 'reserve') {
+        newStatus = 'Đã đặt';
+        body = { status: newStatus };
+    } else if (action === 'occupy') {
+        newStatus = 'Đang dùng';
+        // Mở form tạo đơn hàng cho bàn này
+        closeModal('tableActionModal');
+        openCreateOrderForTable(tableId);
+        return;
+    } else if (action === 'available') {
+        newStatus = 'Trống';
+        body = { status: newStatus, orderId: null };
+    }
+    
+    try {
+        await apiCall(`/tables/${tableId}`, {
+            method: 'PUT',
+            body: JSON.stringify(body)
+        });
+        alert(`Đã cập nhật trạng thái bàn ${tableId} thành ${newStatus}`);
+        closeModal('tableActionModal');
+        loadTables(); // Tải lại lưới bàn
+    } catch (error) {
+        console.error('Error updating table status:', error);
+    }
+}
+
+// ====================================================================
+// --- QUẢN LÝ THANH TOÁN (Payment) ---
+// ====================================================================
+async function processPayment(orderId) {
+    if (confirm(`Xác nhận thanh toán cho đơn hàng ${orderId}?`)) {
+        try {
+            const result = await apiCall(`/orders/${orderId}/pay`, { method: 'POST' });
+            alert(`Thanh toán thành công cho đơn hàng ${orderId}.`);
+            loadOrders(); // Tải lại danh sách đơn hàng
+            loadTables(); // Tải lại trạng thái bàn
+            loadDataForPage('paymentManagement'); // Tải lại danh sách chờ thanh toán
+        } catch (error) {
+            console.error('Error processing payment:', error);
+        }
+    }
+}
+
+// ====================================================================
+// --- QUẢN LÝ NHÂN VIÊN (Staff) ---
+// ====================================================================
+const staffModal = document.getElementById('staffModal');
+const staffForm = document.getElementById('staffForm');
+
+document.getElementById('showAddStaffModal').addEventListener('click', () => {
+    staffForm.reset();
+    document.getElementById('staffId').value = '';
+    document.getElementById('staffUsername').disabled = false;
+    document.getElementById('staffPassword').placeholder = "Nhập mật khẩu (bắt buộc)";
+    document.getElementById('staffModalTitle').textContent = 'Thêm Nhân viên mới';
+    showModal('staffModal');
+});
+
+document.getElementById('closeStaffModal').addEventListener('click', () => closeModal('staffModal'));
+
+async function openEditStaffModal(staffId) {
+    try {
+        const staff = await apiCall(`/staff/${staffId}`);
+        document.getElementById('staffId').value = staff.id;
+        document.getElementById('staffName').value = staff.name;
+        document.getElementById('staffUsername').value = staff.username;
+        document.getElementById('staffUsername').disabled = true; // Không cho sửa username
+        document.getElementById('staffRole').value = staff.role;
+        document.getElementById('staffPassword').value = "";
+        document.getElementById('staffPassword').placeholder = "Để trống nếu không muốn đổi mật khẩu";
+        document.getElementById('staffModalTitle').textContent = 'Sửa Nhân viên: ' + staff.name;
+        showModal('staffModal');
+    } catch (error) {
+        console.error('Error fetching staff details:', error);
+    }
+}
+
+staffForm.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const id = document.getElementById('staffId').value;
+    const staffData = {
+        name: document.getElementById('staffName').value,
+        username: document.getElementById('staffUsername').value,
+        password: document.getElementById('staffPassword').value,
+        role: document.getElementById('staffRole').value,
+    };
+
+    // Nếu sửa mà không nhập pass thì không gửi
+    if (id && !staffData.password) {
+        delete staffData.password;
+    }
+
+    try {
+        if (id) {
+            await apiCall(`/staff/${id}`, {
+                method: 'PUT',
+                body: JSON.stringify(staffData)
+            });
+            alert(`Đã cập nhật nhân viên "${staffData.name}" thành công!`);
+        } else {
+            await apiCall('/staff', {
+                method: 'POST',
+                body: JSON.stringify(staffData)
+            });
+            alert(`Đã thêm nhân viên "${staffData.name}" thành công!`);
+        }
+        
+        closeModal('staffModal');
+        loadStaff();
+    } catch (error) {
+        console.error('Error saving staff:', error);
+    }
+});
+
+async function confirmDeleteStaff(staffId, staffName) {
+    if (confirm(`Bạn có chắc chắn muốn xóa nhân viên "${staffName}" không?`)) {
+        try {
+            await apiCall(`/staff/${staffId}`, { method: 'DELETE' });
+            alert(`Đã xóa nhân viên: ${staffName}`);
+            loadStaff();
+        } catch (error) {
+            console.error('Error deleting staff:', error);
+        }
+    }
+}
+
+// ====================================================================
+// --- QUẢN LÝ NHÁNH (Branch Management) ---
+// ====================================================================
+
+// Branch modal HTML will be inserted in DOM near other modals (created below via patch)
+const branchModal = document.createElement('div');
+branchModal.innerHTML = `
+<div id="branchModal" class="modal hidden">
+  <div class="modal-content">
+    <span class="modal-close" id="closeBranchModal">&times;</span>
+    <h2 id="branchModalTitle">Thêm Nhánh</h2>
+    <form id="branchForm">
+      <input type="hidden" id="branchId">
+      <div class="form-group">
+        <label class="form-label">Tên Nhánh</label>
+        <input type="text" class="form-control" id="branchName" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Địa chỉ</label>
+        <input type="text" class="form-control" id="branchAddress">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Liên hệ</label>
+        <input type="text" class="form-control" id="branchContact">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Trạng thái</label>
+        <select class="form-control" id="branchStatus">
+          <option value="Hoạt động">Hoạt động</option>
+          <option value="Ngưng">Ngưng</option>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary">Lưu</button>
+    </form>
+  </div>
+</div>
+`;
+document.body.appendChild(branchModal);
+
+const branchForm = document.getElementById('branchForm');
+
+document.getElementById('showAddBranchModal').addEventListener('click', () => {
+    document.getElementById('branchForm').reset();
+    document.getElementById('branchId').value = '';
+    document.getElementById('branchModalTitle').textContent = 'Thêm Nhánh mới';
+    showModal('branchModal');
+});
+document.getElementById('closeBranchModal').addEventListener('click', () => closeModal('branchModal'));
+
+async function loadBranches() {
+    try {
+        const branches = await apiCall('/branches');
+        // cache for client-side search/filter
+        currentBranches = branches || [];
+        updateBranchesTable(currentBranches);
+    } catch (error) {
+        console.error('Error loading branches:', error);
+    }
+}
+
+function updateBranchesTable(branches) {
+    const tbody = document.getElementById('branchesTableBody');
+    tbody.innerHTML = '';
+    if (!branches || branches.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6">Chưa có nhánh nào.</td></tr>';
+        return;
+    }
+    branches.forEach(b => {
+        const row = `
+            <tr>
+                <td>${b.id}</td>
+                <td>${b.name}</td>
+                <td>${b.address || ''}</td>
+                <td>${b.contact || ''}</td>
+                <td><span class="badge ${getStatusBadge(b.status || '')}">${b.status || ''}</span></td>
+                <td>
+                    <button class="btn btn-sm btn-${b.status === 'Hoạt động' ? 'warning' : 'success'}" onclick="toggleBranchStatus('${b.id}', '${b.status || ''}')">${b.status === 'Hoạt động' ? '<i class=\'fas fa-ban\'></i> Tắt' : '<i class=\'fas fa-check\'></i> Kích hoạt'}</button>
+                    <button class="btn btn-warning btn-sm" onclick="openEditBranchModal('${b.id}')"><i class='fas fa-edit'></i> Sửa</button>
+                    <button class="btn btn-danger btn-sm" onclick="confirmDeleteBranch('${b.id}', '${b.name}')"><i class='fas fa-trash-alt'></i> Xóa</button>
+                </td>
+            </tr>
+        `;
+        tbody.innerHTML += row;
+    });
+}
+
+async function openEditBranchModal(branchId) {
+    try {
+        const b = await apiCall(`/branches/${branchId}`);
+        document.getElementById('branchId').value = b.id;
+        document.getElementById('branchName').value = b.name;
+        document.getElementById('branchAddress').value = b.address || '';
+        document.getElementById('branchContact').value = b.contact || '';
+        document.getElementById('branchStatus').value = b.status || 'Hoạt động';
+        document.getElementById('branchModalTitle').textContent = 'Sửa Nhánh: ' + b.name;
+        showModal('branchModal');
+    } catch (error) {
+        console.error('Error fetching branch:', error);
+    }
+}
+
+branchForm.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const id = document.getElementById('branchId').value;
+    const data = {
+        name: document.getElementById('branchName').value,
+        address: document.getElementById('branchAddress').value,
+        contact: document.getElementById('branchContact').value,
+        status: document.getElementById('branchStatus').value
+    };
+    // client-side validation
+    const validationError = validateBranchData(data);
+    if (validationError) {
+        alert(validationError);
+        return;
+    }
+    try {
+        if (id) {
+            await apiCall(`/branches/${id}`, { method: 'PUT', body: JSON.stringify(data) });
+            alert('Đã cập nhật nhánh');
+        } else {
+            await apiCall('/branches', { method: 'POST', body: JSON.stringify(data) });
+            alert('Đã thêm nhánh mới');
+        }
+        closeModal('branchModal');
+        loadBranches();
+    } catch (error) {
+        console.error('Error saving branch:', error);
+        alert(error.message || 'Lỗi khi lưu nhánh');
+    }
+});
+
+// Simple validation for branch data
+function validateBranchData(data) {
+    if (!data.name || String(data.name).trim().length < 2) return 'Tên nhánh phải có ít nhất 2 ký tự.';
+    if (data.contact && data.contact.length > 100) return 'Thông tin liên hệ quá dài.';
+    return null;
+}
+
+async function confirmDeleteBranch(branchId, branchName) {
+    if (!confirm(`Bạn có chắc chắn muốn xóa nhánh "${branchName}"?`)) return;
+    try {
+        await apiCall(`/branches/${branchId}`, { method: 'DELETE' });
+        alert('Đã xóa nhánh');
+        loadBranches();
+    } catch (error) {
+        console.error('Error deleting branch:', error);
+    }
+}
+
+// Toggle branch status between 'Hoạt động' and 'Ngưng'
+async function toggleBranchStatus(branchId, currentStatus) {
+    const newStatus = (currentStatus === 'Hoạt động') ? 'Ngưng' : 'Hoạt động';
+    if (!confirm(`Bạn có muốn chuyển trạng thái nhánh này sang "${newStatus}"?`)) return;
+    try {
+        await apiCall(`/branches/${branchId}`, { method: 'PUT', body: JSON.stringify({ status: newStatus }) });
+        alert('Cập nhật trạng thái nhánh thành công');
+        loadBranches();
+    } catch (error) {
+        console.error('Error toggling branch status:', error);
+        alert(error.message || 'Lỗi khi cập nhật trạng thái');
+    }
+}
+
+// Search/filter branches client-side
+document.getElementById('branchSearch').addEventListener('input', function(e) {
+    const q = (e.target.value || '').trim().toLowerCase();
+    if (!q) return updateBranchesTable(currentBranches);
+    const filtered = currentBranches.filter(b => 
+        (b.name || '').toLowerCase().includes(q) || 
+        (b.address || '').toLowerCase().includes(q) ||
+        (b.contact || '').toLowerCase().includes(q)
+    );
+    updateBranchesTable(filtered);
+});
+
+document.getElementById('refreshBranchesBtn').addEventListener('click', function(){
+    document.getElementById('branchSearch').value = '';
+    loadBranches();
+});
+
+// ====================================================================
+// --- QUẢN LÝ SỰ KIỆN (Event) ---
+// ====================================================================
+const eventModal = document.getElementById('eventModal');
+const eventForm = document.getElementById('eventForm');
+
+document.getElementById('showAddEventModal').addEventListener('click', () => {
+    eventForm.reset();
+    document.getElementById('eventId').value = '';
+    document.getElementById('eventModalTitle').textContent = 'Thêm Sự kiện mới';
+    showModal('eventModal');
+});
+
+document.getElementById('closeEventModal').addEventListener('click', () => closeModal('eventModal'));
+
+async function openEditEventModal(eventId) {
+    try {
+        const event = await apiCall(`/events/${eventId}`);
+        
+        // Định dạng lại datetime-local
+        const eventTime = new Date(event.time);
+        const localTime = new Date(eventTime.getTime() - (eventTime.getTimezoneOffset() * 60000)).toISOString().slice(0, 16);
+
+        document.getElementById('eventId').value = event.id;
+        document.getElementById('eventName').value = event.name;
+        document.getElementById('eventTime').value = localTime;
+        document.getElementById('eventGuests').value = event.guests;
+        document.getElementById('eventStatus').value = event.status;
+        document.getElementById('eventModalTitle').textContent = 'Sửa Sự kiện: ' + event.name;
+        showModal('eventModal');
+    } catch (error) {
+        console.error('Error fetching event details:', error);
+    }
+}
+
+eventForm.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const id = document.getElementById('eventId').value;
+    const eventData = {
+        name: document.getElementById('eventName').value,
+        time: document.getElementById('eventTime').value,
+        guests: document.getElementById('eventGuests').value,
+        status: document.getElementById('eventStatus').value,
+    };
+    
+    try {
+        if (id) {
+            await apiCall(`/events/${id}`, {
+                method: 'PUT',
+                body: JSON.stringify(eventData)
+            });
+            alert(`Đã cập nhật sự kiện "${eventData.name}" thành công!`);
+        } else {
+            await apiCall('/events', {
+                method: 'POST',
+                body: JSON.stringify(eventData)
+            });
+            alert(`Đã thêm sự kiện "${eventData.name}" thành công!`);
+        }
+        
+        closeModal('eventModal');
+        loadEvents();
+    } catch (error) {
+        console.error('Error saving event:', error);
+    }
+});
+
+async function confirmDeleteEvent(eventId, eventName) {
+    if (confirm(`Bạn có chắc chắn muốn hủy sự kiện "${eventName}" không?`)) {
+        try {
+            await apiCall(`/events/${eventId}`, { method: 'DELETE' });
+            alert(`Đã hủy sự kiện: ${eventName}`);
+            loadEvents();
+        } catch (error) {
+            console.error('Error deleting event:', error);
+        }
+    }
+}
+
+
+// ====================================================================
+// --- GIAO DIỆN KHÁCH HÀNG (Customer Facing) ---
+// ====================================================================
+
+// --- Chuyển đổi trang Login Khách hàng ---
+document.getElementById('showCustomerRegister').addEventListener('click', function(e) {
+    e.preventDefault();
+    document.getElementById('customerLoginPage').classList.add('hidden');
+    document.getElementById('customerRegisterPage').classList.remove('hidden');
+});
+
+document.getElementById('showCustomerLogin').addEventListener('click', function(e) {
+    e.preventDefault();
+    document.getElementById('customerRegisterPage').classList.add('hidden');
+    document.getElementById('customerLoginPage').classList.remove('hidden');
+});
+
+// --- Đăng ký Khách hàng ---
+document.getElementById('customerRegisterForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const customerData = Object.fromEntries(formData.entries());
+    
+    try {
+        const data = await customerApiCall('/register', {
+            method: 'POST',
+            body: JSON.stringify(customerData)
+        });
+        
+        alert('Đăng ký thành công! Đang đăng nhập...');
+        loginCustomer(data.token, data.customer);
+        
+    } catch (error) {
+        alert(error.message);
+    }
+});
+
+// --- Đăng nhập Khách hàng ---
+document.getElementById('customerLoginForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const email = this.email.value;
+    const password = this.password.value;
+    
+    try {
+        const data = await customerApiCall('/login', {
+            method: 'POST',
+            body: JSON.stringify({ email, password })
+        });
+        
+        loginCustomer(data.token, data.customer);
+        
+    } catch (error) {
+        alert(error.message);
+    }
+});
+
+function loginCustomer(token, customer) {
+    localStorage.setItem('customerToken', token);
+    localStorage.setItem('customerInfo', JSON.stringify(customer));
+    
+    // Ẩn tất cả các trang khác
+    document.getElementById('customerLoginPage').classList.add('hidden');
+    document.getElementById('customerRegisterPage').classList.add('hidden');
+    document.getElementById('loginPage').classList.add('hidden');
+    document.getElementById('app').classList.add('hidden');
+    
+    // Hiển thị dashboard khách hàng
+    document.getElementById('customerDashboard').classList.remove('hidden');
+    
+    // Cập nhật thông tin khách hàng
+    document.getElementById('customerName').textContent = customer.name;
+    document.querySelector('#customerDashboard .user-avatar').textContent = 
+        customer.name.split(' ').map(n => n[0]).join('').toUpperCase();
+        
+    // Tải lịch sử đặt bàn
+    loadBookingHistory(customer.id);
+}
+
+// ==========================
+// Quản lý Khách hàng (Admin)
+// ==========================
+const customerModal = document.getElementById('customerModal');
+const customerForm = document.getElementById('customerForm');
+
+document.getElementById('showAddCustomerModal').addEventListener('click', () => {
+    customerForm.reset();
+    document.getElementById('customerId').value = '';
+    document.getElementById('customerModalTitle').textContent = 'Thêm Khách hàng mới';
+    showModal('customerModal');
+});
+document.getElementById('closeCustomerModal').addEventListener('click', () => closeModal('customerModal'));
+
+async function openEditCustomerModal(customerId) {
+    try {
+        const c = await apiCall(`/customers/${customerId}`);
+        document.getElementById('customerId').value = c.id;
+        document.getElementById('customerName').value = c.name || '';
+        document.getElementById('customerEmail').value = c.email || '';
+        document.getElementById('customerPhone').value = c.phone || '';
+        document.getElementById('customerNote').value = c.note || '';
+        document.getElementById('customerModalTitle').textContent = 'Sửa Khách hàng: ' + (c.name || '');
+        showModal('customerModal');
+    } catch (error) {
+        console.error('Error fetching customer:', error);
+        alert('Không thể tải thông tin khách hàng');
+    }
+}
+
+customerForm.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const id = document.getElementById('customerId').value;
+    const data = {
+        name: document.getElementById('customerName').value.trim(),
+        email: document.getElementById('customerEmail').value.trim(),
+        phone: document.getElementById('customerPhone').value.trim(),
+        note: document.getElementById('customerNote').value.trim()
+    };
+
+    if (!data.name) { alert('Vui lòng nhập tên khách hàng'); return; }
+
+    try {
+        if (id) {
+            await apiCall(`/customers/${id}`, { method: 'PUT', body: JSON.stringify(data) });
+            alert('Đã cập nhật khách hàng');
+        } else {
+            await apiCall('/customers', { method: 'POST', body: JSON.stringify(data) });
+            alert('Đã thêm khách hàng mới');
+        }
+        closeModal('customerModal');
+        loadAdminCustomers();
+    } catch (error) {
+        console.error('Error saving customer:', error);
+        alert(error.message || 'Lỗi khi lưu khách hàng');
+    }
+});
+
+async function confirmDeleteCustomer(customerId, customerName) {
+    if (!confirm(`Bạn có chắc chắn muốn xóa khách hàng "${customerName}"?`)) return;
+    try {
+        await apiCall(`/customers/${customerId}`, { method: 'DELETE' });
+        alert('Đã xóa khách hàng');
+        loadAdminCustomers();
+    } catch (error) {
+        console.error('Error deleting customer:', error);
+        alert(error.message || 'Lỗi khi xóa khách hàng');
+    }
+}
+
+// --- Đặt bàn (Booking) ---
+document.getElementById('bookingForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const customerInfo = JSON.parse(localStorage.getItem('customerInfo'));
+    const bookingData = {
+        customerId: customerInfo.id,
+        date: document.getElementById('bookingDate').value,
+        time: document.getElementById('bookingTime').value,
+        guests: document.getElementById('bookingGuests').value,
+        specialRequests: document.getElementById('specialRequests').value
+    };
+    
+    try {
+        await customerApiCall('/book-table', {
+            method: 'POST',
+            body: JSON.stringify(bookingData)
+        });
+        
+        alert('Đặt bàn thành công! Chúng tôi sẽ liên hệ xác nhận.');
+        this.reset();
+        loadBookingHistory(customerInfo.id);
+        
+    } catch (error) {
+        alert(error.message);
+    }
+});
+
+// --- Tải lịch sử đặt bàn ---
+async function loadBookingHistory(customerId) {
+    try {
+        const bookings = await customerApiCall(`/bookings/${customerId}`);
+        const historyElement = document.getElementById('bookingHistory');
+        
+        if (bookings.length === 0) {
+            historyElement.innerHTML = '<p>Chưa có lịch sử đặt bàn</p>';
+            return;
+        }
+        
+        let html = `
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Mã đặt</th>
+                        <th>Ngày giờ</th>
+                        <th>Số khách</th>
+                        <th>Trạng thái</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+        
+        bookings.forEach(booking => {
+            const bookingDateTime = new Date(booking.date + 'T' + booking.time).toLocaleString('vi-VN');
+            const statusClass = getStatusBadge(booking.status);
+            
+            html += `
+                <tr>
+                    <td>#BK${String(booking.id).padStart(3, '0')}</td>
+                    <td>${bookingDateTime}</td>
+                    <td>${booking.guests} khách</td>
+                    <td><span class="badge ${statusClass}">${booking.status}</span></td>
+                    <td>
+                        ${booking.status === 'Đã đặt' ? 
+                            `<button class="btn btn-danger btn-sm" onclick="cancelBooking(${booking.id})">Hủy</button>` : 
+                            ''
+                        }
+                    </td>
+                </tr>
+            `;
+        });
+        
+        html += `</tbody></table>`;
+        historyElement.innerHTML = html;
+        
+    } catch (error) {
+        console.error('Error loading booking history:', error);
+    }
+}
+
+// --- Hủy đặt bàn ---
+async function cancelBooking(bookingId) {
+    if (!confirm('Bạn có chắc chắn muốn hủy đặt bàn này?')) {
+        return;
+    }
+    
+    try {
+        await customerApiCall(`/cancel-booking/${bookingId}`, {
+            method: 'PUT'
+        });
+        
+        alert('Đã hủy đặt bàn thành công');
+        const customerInfo = JSON.parse(localStorage.getItem('customerInfo'));
+        loadBookingHistory(customerInfo.id);
+        
+    } catch (error) {
+        alert(error.message);
+    }
+}
+
+// --- Đăng xuất Khách hàng ---
+function customerLogout() {
+    localStorage.removeItem('customerToken');
+    localStorage.removeItem('customerInfo');
+    document.getElementById('customerDashboard').classList.add('hidden');
+    document.getElementById('customerLoginPage').classList.remove('hidden');
+}
+
+// --- KIỂM TRA ĐĂNG NHẬP (Check Login) ---
+window.addEventListener('DOMContentLoaded', function() {
+    const customerToken = localStorage.getItem('customerToken');
+    const customerInfo = localStorage.getItem('customerInfo');
+    
+    if (customerToken && customerInfo) {
+        // Nếu có token khách, đăng nhập với tư cách khách
+        loginCustomer(customerToken, JSON.parse(customerInfo));
+    } else {
+        // Mặc định hiển thị trang đăng nhập khách
+        document.getElementById('customerLoginPage').classList.remove('hidden');
+    }
+});
+    </script>
+</body>
+</html>
