@@ -10,7 +10,7 @@ Hệ thống quản lý quán ăn là một ứng dụng phần mềm hỗ trợ
   + Trang chủ
   <img width="1902" height="931" alt="image" src="./Trangchu.png" />
   + Quản lý món ăn & menu
-  <img width="1902" height="931" alt="image" src="./Quanlymonan" />
+  <img width="1902" height="931" alt="image" src="./Quanlymonan.png" />
   + Quản lý đơn hàng
   <img width="1902" height="931" alt="image" src="./Quanlydonhang.png" />
   + Quản lý bàn ăn
